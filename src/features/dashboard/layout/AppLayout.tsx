@@ -1,7 +1,7 @@
 import { Layout, Menu, Dropdown, Typography } from 'antd';
 import { useMemo, useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { HomeOutlined, KeyOutlined, FileTextOutlined, AppstoreOutlined, BulbOutlined } from '@ant-design/icons';
+import { HomeOutlined, KeyOutlined, FileTextOutlined, AppstoreOutlined, BulbOutlined, TeamOutlined } from '@ant-design/icons';
 import { useAuth } from '@/app/providers/AuthProvider';
 
 const { Header, Sider, Content } = Layout;
@@ -20,6 +20,7 @@ export default function AppLayout() {
     if (p.startsWith('/prompt-templates')) return 'prompt-templates';
     if (p.startsWith('/style-libraries')) return 'style-libraries';
     if (p.startsWith('/hints')) return 'hints';
+    if (p.startsWith('/users')) return 'users';
     return '';
   }, [location.pathname]);
 
@@ -41,6 +42,12 @@ export default function AppLayout() {
       label: 'Prompt Templates',
       icon: <FileTextOutlined />,
       onClick: () => navigate('/prompt-templates'),
+    },
+    {
+      key: 'users',
+      label: 'Users',
+      icon: <TeamOutlined />,
+      onClick: () => navigate('/users'),
     },
     {
       key: 'style-libraries',

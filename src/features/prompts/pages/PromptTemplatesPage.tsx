@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Drawer, Form, Input, Switch, Table, Tag, Typography, message, Space, Row, Col, Popconfirm } from 'antd';
+import { Button, Card, Drawer, Form, Input, Switch, Tag, Typography, message, Space, Row, Col, Popconfirm, Image } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined, FileTextOutlined } from '@ant-design/icons';
+import { PlusOutlined, FileTextOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import * as TemplatesApi from '@/features/prompts/api/templates.api';
 import PageContainer from '@/components/PageContainer';
+import ImageUpload from '@/components/forms/ImageUpload';
+import { AdminTable, ActionIconButton } from '@/components/admin/AdminTable';
+import dayjs from 'dayjs';
+
+const formatDateTime = (value?: string) => (value ? dayjs(value).format('DD-MM-YYYY HH:mm') : '-');
 
 type Template = TemplatesApi.PromptTemplate;
 
@@ -95,7 +100,13 @@ export default function PromptTemplatesPage() {
       title: 'Preview',
       dataIndex: 'previewUrl',
       key: 'previewUrl',
-      render: (url?: string) => (url ? <a href={url} target="_blank" rel="noreferrer">Xem</a> : '-'),
+      width: 100,
+      render: (url?: string) =>
+        url ? (
+          <Image src={url} width={64} height={64} style={{ objectFit: 'cover' }} preview={false} alt="preview" />
+        ) : (
+          '-'
+        ),
     },
     { title: 'Prompt', dataIndex: 'prompt', key: 'prompt', ellipsis: true },
     {
@@ -104,16 +115,23 @@ export default function PromptTemplatesPage() {
       key: 'isActive',
       render: (v: boolean) => (v ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>),
     },
-    { title: 'Tạo lúc', dataIndex: 'createdAt', key: 'createdAt' },
+    {
+      title: 'Tạo lúc',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (value?: string) => formatDateTime(value),
+    },
     {
       title: 'Hành động',
       key: 'actions',
-      width: 200,
+      width: 160,
       render: (_, record) => (
-        <Space>
-          <Button onClick={() => openEdit(record)}>Sửa</Button>
+        <Space size="small">
+          <ActionIconButton title="Chỉnh sửa" icon={<EditOutlined />} color="#faad14" onClick={() => openEdit(record)} />
           <Popconfirm title="Xác nhận xoá?" onConfirm={() => handleDelete(record)} okText="Xoá" cancelText="Huỷ">
-            <Button danger>Xoá</Button>
+            <span>
+              <ActionIconButton title="Xoá" icon={<DeleteOutlined />} danger />
+            </span>
           </Popconfirm>
         </Space>
       ),
@@ -140,7 +158,7 @@ export default function PromptTemplatesPage() {
         </Row>
       </Card>
       <Card>
-        <Table<Template> rowKey={(r) => r.id} loading={loading} dataSource={items} columns={columns} />
+        <AdminTable<Template> rowKey={(r) => r.id} loading={loading} dataSource={items} columns={columns} />
       </Card>
 
       <Drawer title={editing ? 'Chỉnh sửa Prompt Template' : 'Thêm Prompt Template'} placement="right" width={520} open={drawerOpen} onClose={() => { setDrawerOpen(false); setEditing(null); }} destroyOnClose>
@@ -152,7 +170,7 @@ export default function PromptTemplatesPage() {
             <Input.TextArea rows={5} placeholder="Mô tả chi tiết..." />
           </Form.Item>
           <Form.Item label="Preview URL" name="previewUrl" rules={[{ type: 'url', message: 'URL không hợp lệ' }]}>
-            <Input placeholder="https://example.com/preview.jpg" />
+            <ImageUpload />
           </Form.Item>
           <Form.Item label="Kích hoạt" name="isActive" valuePropName="checked" initialValue={true}>
             <Switch />

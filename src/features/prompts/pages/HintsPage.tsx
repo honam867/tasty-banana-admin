@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Drawer, Form, Input, Select, Switch, Table, Tag, Typography, message, Space, Row, Col, Popconfirm } from 'antd';
+import { Button, Card, Drawer, Form, Input, Select, Switch, Tag, Typography, message, Space, Row, Col, Popconfirm } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined, BulbOutlined } from '@ant-design/icons';
+import { PlusOutlined, BulbOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import * as HintsApi from '@/features/prompts/api/hints.api';
 import * as TemplatesApi from '@/features/prompts/api/templates.api';
+import { AdminTable, ActionIconButton } from '@/components/admin/AdminTable';
 import PageContainer from '@/components/PageContainer';
 
 type Hint = HintsApi.Hint;
@@ -94,15 +95,15 @@ export default function HintsPage() {
       title: 'Hành động',
       key: 'actions',
       render: (_, record) => (
-        <Space>
-          <Button type="link" icon={<PlusOutlined />} onClick={() => openAddTemplate(record)}>
-            Thêm Template
-          </Button>
-          <Button onClick={() => openEdit(record)}>Sửa</Button>
-          <Popconfirm title="Xác nhận xoá hint này?" onConfirm={async () => {
-            try { await HintsApi.deleteHint(record.id); message.success('Đã xoá'); fetchList(); } catch (e: any) { message.error(e?.response?.data?.message || 'Xoá thất bại'); }
-          }} okText="Xoá" cancelText="Huỷ">
-            <Button danger>Xoá</Button>
+        <Space size="small">
+          <ActionIconButton title="Add template" icon={<PlusOutlined />} color="#1677ff" onClick={() => openAddTemplate(record)} />
+          <ActionIconButton title="Edit" icon={<EditOutlined />} color="#faad14" onClick={() => openEdit(record)} />
+          <Popconfirm title="Delete this hint?" onConfirm={async () => {
+            try { await HintsApi.deleteHint(record.id); message.success('Deleted'); fetchList(); } catch (e: any) { message.error(e?.response?.data?.message || 'Delete failed'); }
+          }} okText="Delete" cancelText="Cancel">
+            <span>
+              <ActionIconButton title="Delete" icon={<DeleteOutlined />} danger />
+            </span>
           </Popconfirm>
         </Space>
       ),
@@ -135,7 +136,7 @@ export default function HintsPage() {
       </Card>
 
       <Card>
-        <Table<Hint> rowKey={(r) => r.id} loading={loading} dataSource={items} columns={columns} />
+        <AdminTable<Hint> rowKey={(r) => r.id} loading={loading} dataSource={items} columns={columns} />
       </Card>
 
       <Drawer
@@ -205,3 +206,6 @@ export default function HintsPage() {
     </PageContainer>
   );
 }
+
+
+

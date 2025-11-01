@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Card, Drawer, Form, Input, InputNumber, Switch, Table, Tag, Typography, message, Popconfirm, Space } from 'antd';
+import { Button, Card, Drawer, Form, Input, InputNumber, Switch, Tag, Typography, message, Popconfirm, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, KeyOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import * as OperationsApi from '@/features/operations/api/operations.api';
 import PageContainer from '@/components/PageContainer';
+import { AdminTable, ActionIconButton } from '@/components/admin/AdminTable';
 
 type Operation = OperationsApi.Operation;
 
@@ -86,34 +87,34 @@ export default function OperationsPage() {
   }
 
   const columns: ColumnsType<Operation> = useMemo(
-    () => [
-      { title: 'Tên', dataIndex: 'name', key: 'name' },
-      { title: 'Tokens/Op', dataIndex: 'tokensPerOperation', key: 'tokensPerOperation' },
-      { title: 'Mô tả', dataIndex: 'description', key: 'description', ellipsis: true },
-      {
-        title: 'Trạng thái',
-        dataIndex: 'isActive',
-        key: 'isActive',
-        render: (v: boolean) => (v ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>),
-      },
-      {
-        title: 'Hành động',
-        key: 'actions',
-        width: 160,
-        render: (_, record) => (
-          <Space>
-            <Button icon={<EditOutlined />} onClick={() => openEdit(record)}>
-              Sửa
-            </Button>
-            <Popconfirm title="Xác nhận xoá?" onConfirm={() => handleDelete(record)} okText="Xoá" cancelText="Huỷ">
-              <Button danger icon={<DeleteOutlined />}>Xoá</Button>
-            </Popconfirm>
-          </Space>
-        ),
-      },
-    ],
-    []
-  );
+  () => [
+    { title: 'Name', dataIndex: 'name', key: 'name' },
+    { title: 'Tokens/Op', dataIndex: 'tokensPerOperation', key: 'tokensPerOperation' },
+    { title: 'Description', dataIndex: 'description', key: 'description', ellipsis: true },
+    {
+      title: 'Status',
+      dataIndex: 'isActive',
+      key: 'isActive',
+      render: (v: boolean) => (v ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      width: 140,
+      render: (_, record) => (
+        <Space size="small">
+          <ActionIconButton title="Edit" icon={<EditOutlined />} color="#faad14" onClick={() => openEdit(record)} />
+          <Popconfirm title="Delete operation?" onConfirm={() => handleDelete(record)} okText="Delete" cancelText="Cancel">
+            <span>
+              <ActionIconButton title="Delete" icon={<DeleteOutlined />} danger />
+            </span>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ],
+  []
+);
 
   return (
     <PageContainer
@@ -122,7 +123,7 @@ export default function OperationsPage() {
       extra={<Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>Thêm</Button>}
     >
       <Card>
-        <Table<Operation>
+        <AdminTable<Operation>
           rowKey={(r) => r.id}
           loading={loading}
           dataSource={items}

@@ -11,6 +11,7 @@ import OperationsPage from '@/features/operations/pages/OperationsPage';
 import PromptTemplatesPage from '@/features/prompts/pages/PromptTemplatesPage';
 import StyleLibrariesPage from '@/features/prompts/pages/StyleLibrariesPage';
 import HintsPage from '@/features/prompts/pages/HintsPage';
+import AdminUsersPage from '@/features/users/pages/AdminUsersPage';
 
 export default function AppRoutes() {
   return (
@@ -41,6 +42,7 @@ export default function AppRoutes() {
         <Route path="welcome" element={<Welcome />} />
         <Route path="operations" element={<OperationsPage />} />
         <Route path="prompt-templates" element={<PromptTemplatesPage />} />
+        <Route path="users" element={<AdminUsersPage />} />
         <Route path="style-libraries" element={<StyleLibrariesPage />} />
         <Route path="hints" element={<HintsPage />} />
       </Route>
